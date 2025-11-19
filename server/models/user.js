@@ -3,11 +3,6 @@ const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
-    googleId: {
-      type: String,
-      sparse: true,
-      unique: true,
-    },
 
     email: {
       type: String,
@@ -28,42 +23,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    photo: {
-      type: String,
-      default: null,
-    },
 
-    authMethod: {
-      type: String,
-      enum: ["google", "email", "both"],
-      default: "email",
-    },
 
-    isEmailVerified: {
-      type: Boolean,
-      default: false,
-    },
-    emailVerificationToken: {
-      type: String,
-      default: null,
-    },
-    emailVerificationExpires: {
-      type: Date,
-      default: null,
-    },
 
-    resetPasswordToken: {
-      type: String,
-      default: null,
-    },
     role: {
       type: String,
-      enum: ['super_admin', 'admin', 'driver', 'user'],
-      default: 'user',
-    },
-    resetPasswordExpires: {
-      type: Date,
-      default: null,
+      enum: ['superviseur', 'operateur'],
+      default: 'operateur',
     },
 
     refreshTokens: [
@@ -129,10 +95,7 @@ userSchema.methods.getPublicProfile = function () {
     _id: this._id,
     email: this.email,
     name: this.name,
-    photo: this.photo,
     role: this.role,
-    authMethod: this.authMethod,
-    isEmailVerified: this.isEmailVerified,
     createdAt: this.createdAt,
   };
 };

@@ -16,30 +16,6 @@ const signup = async (req, res) => {
     const existingUser = await User.findOne({ email: email.toLowerCase() });
 
     if (existingUser) {
-      if (existingUser.googleId && !existingUser.password) {
-        existingUser.password = password;
-        existingUser.name = name || existingUser.name;
-        existingUser.authMethod = "both";
-        await existingUser.save();
-
-        const accessToken = generateAccessToken(existingUser._id);
-        const refreshToken = generateRefreshToken(existingUser._id);
-        await existingUser.addRefreshToken(refreshToken);
-
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
-
-        return res.status(200).json({
-          success: true,
-          message: "Password added successfully",
-          accessToken,
-          user: existingUser.getPublicProfile(),
-        });
-      }
 
       return res.status(400).json({
         success: false,
@@ -51,8 +27,6 @@ const signup = async (req, res) => {
       email: email.toLowerCase(),
       password,
       name,
-      authMethod: "email",
-      isEmailVerified: false,
     });
 
     const accessToken = generateAccessToken(user._id);
