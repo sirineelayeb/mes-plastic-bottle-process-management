@@ -1,5 +1,5 @@
-//@ts-nocheck
 import { useState } from "react";
+import { Link } from "react-router-dom"; // ✅ Import Link
 import {
   Sidebar,
   SidebarContent,
@@ -32,7 +32,7 @@ import { menuConfig } from "@/lib/menu-config";
 import { useAuthContext } from "@/hooks/useAuthContext";
 
 function Navbar() {
-  const { user } = useAuthContext()
+  const { user } = useAuthContext();
   const role: Role = user?.role;
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
@@ -40,8 +40,8 @@ function Navbar() {
     setOpenItems((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
- 
   const currentGroups = menuConfig[role] || [];
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -75,10 +75,10 @@ function Navbar() {
                               {item.subItems.map((subItem) => (
                                 <SidebarMenuSubItem key={subItem.title}>
                                   <SidebarMenuSubButton asChild>
-                                    <a href={subItem.url}>
+                                    <Link to={subItem.url}>
                                       <subItem.icon className="h-4 w-4" />
                                       <span>{subItem.title}</span>
-                                    </a>
+                                    </Link>
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
                               ))}
@@ -92,10 +92,10 @@ function Navbar() {
                   return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
-                        <a href={item.url}>
+                        <Link to={item.url}>
                           <item.icon />
                           <span>{item.title}</span>
-                        </a>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
@@ -105,6 +105,7 @@ function Navbar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
+
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -113,7 +114,9 @@ function Navbar() {
                 <SidebarMenuButton className="h-auto py-2">
                   <Avatar>
                     <AvatarImage src={user?.photo} />
-                    <AvatarFallback>{user?.name[0]+user?.name[1]}</AvatarFallback>
+                    <AvatarFallback>
+                      {user?.name[0] + user?.name[1]}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                     <span className="text-sm font-medium">{user?.name}</span>
@@ -125,12 +128,6 @@ function Navbar() {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" className="w-56">
-                <DropdownMenuItem>
-                  <span>Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Billing</span>
-                </DropdownMenuItem>
                 <DropdownMenuItem>
                   <span>Sign out</span>
                 </DropdownMenuItem>

@@ -1,88 +1,98 @@
-import type { MenuConfig } from "@/types/types"
+// src/config/menuConfig.ts
+
+import type { MenuConfig } from "@/types/types";
 import {
   Home,
   Users,
-  Building,
-  Truck,
+  UserPlus,
+  UserCog,
   Package,
-  MapPin,
-  Bell,
+  ListTodo,
   Settings,
-  BarChart,
-  ShieldCheck,
+  Wrench,
+  Gauge,
   AlertTriangle,
-  Car,
-  List,
-  Calendar,
-  CheckCircle,
-  XCircle,
-} from "lucide-react"
-
+  ClipboardList,
+  Siren,
+  PlusCircle,
+  BarChart3,
+  Activity,
+  Bell,
+} from "lucide-react";
 
 export const menuConfig: MenuConfig = {
-  superviseur: [
-      {
-        label: "Administration",
-        items: [
-          { title: "Tableau de bord", url: "/dashboard", icon: Home },
-          { 
-            title: "Gestion Operateurs", 
-            url: "/operateurs", 
-            icon: Users,
-            subItems: [
-              { title: "Ajout", url: "/operateurs/comptes", icon: ShieldCheck },
-              { title: "Gerer", url: "/operateurs/gerer", icon: ShieldCheck },
-            ]
-          },
-        ],
-      },
-      {
-        label: "Taches",
-        items: [
-          { 
-            title: "Taches", 
-            url: "/taches", 
-            icon: Package,
-            subItems: [
-              { title: "Tous Les Taches", url: "/taches/all", icon: List },
-              { title: "Gerer", url: "/taches/manage", icon: Settings },
-            ]
-          },
-          { 
-            title: "Skills", 
-            url: "/skills", 
-            icon: MapPin,
-            subItems: [
-              { title: "All Skills", url: "/skills/all", icon: Car },
-              { title: "Gerer", url: "/skills/all", icon: MapPin },
-            ]
-          },
-          { title: "Machines", url: "/machines", icon: AlertTriangle,
-            subItems: [
-              { title: "Machine 1", url: "/mechines/1", icon: Car },
-              { title: "Machine 2", url: "/mechines/2", icon: Car },
-              { title: "Machine 3", url: "/mechines/3", icon: Car },
-            ]
-           },
-        ],
-      }
-    ],
-  operateur: [
-      {
-        label: "Gestion",
-        items: [
-          { title: "Tableau de bord", url: "/dashboard", icon: Home },
-          { 
-            title: "Taches", 
-            url: "/taches", 
-            icon: Package,
-          },
-          { 
-            title: "Signaler un probleme", 
-            url: "/report", 
-            icon: Truck,
-          }
-        ],
-      },
-    ],
-}
+  product_manager: [
+    {
+      label: "Administration",
+      items: [
+        { title: "Dashboard", url: "/dashboard", icon: Home },
+        
+        {
+          title: "Operator Management",
+          url: "/operators",
+          icon: Users,
+          subItems: [
+            { title: "Add Operator", url: "/operators/add", icon: UserPlus },
+            { title: "Manage Operators", url: "/operators/manage", icon: UserCog },
+          ],
+        },
+      ],
+    },
+    {
+      label: "Production",
+      items: [
+        {
+          title: "Steps",
+          url: "/steps",
+          icon: Package,
+          subItems: [
+            { title: "All Steps", url: "/steps/all", icon: ListTodo },
+            { title: "Manage Steps", url: "/steps/manage", icon: Settings },
+          ],
+        },
+        {
+          title: "Skills",
+          url: "/skills",
+          icon: Gauge,
+          subItems: [
+            { title: "All Skills", url: "/skills/all", icon: ClipboardList },
+            { title: "Manage Skills", url: "/skills/manage", icon: Wrench },
+          ],
+        },
+        {
+          title: "Machines",
+          url: "/machines",
+          icon: AlertTriangle,
+        subItems: [
+        { title: "All Machines", url: "/machines/all", icon: Wrench },
+        { title: "Add Machine", url: "/machines/add", icon: PlusCircle },
+        { title: "In Service", url: "/machines/in-service", icon: Activity },
+        { title: "Maintenance", url: "/machines/in-maintenance", icon: Settings },
+],
+        },
+        {
+          title: "Live Monitoring",
+          url: "/monitoring",
+          icon: BarChart3,
+        },
+        {
+          title: "Alerts",
+          url: "/alerts",
+          icon: Bell,
+        },
+      ],
+    },
+  ],
+
+  operator: [
+    {
+      label: "My Workspace",
+      items: [
+        { title: "Dashboard", url: "/dashboard", icon: Home },
+        { title: "My Tasks", url: "/tasks", icon: Package },
+        { title: "Report Issue", url: "/report", icon: Siren },
+        { title: "My Alerts", url: "/my-alerts", icon: Bell },
+      ],
+    },
+  ],
+};

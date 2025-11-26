@@ -1,6 +1,6 @@
 import { type LucideIcon } from "lucide-react";
 
-export type Role = "superviseur" | "opoerateur";
+export type Role = "product_manager" | "operator";
 
 export interface SubMenuItem {
   title: string;
@@ -35,6 +35,14 @@ export interface AuthState {
   user: User | null;
   accessToken: string | null;
   isLoading: boolean;
+}
+
+export interface AlertItem {
+  _id: string;
+  type: 'error' | 'warning' | 'info';
+  message: string;
+  step: string;
+  timestamp: string;
 }
 
 export type AuthAction =

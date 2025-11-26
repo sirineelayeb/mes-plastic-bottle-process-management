@@ -16,55 +16,44 @@ import {
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from "react";
-import { useAuthContext } from "@/hooks/useAuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { axiosPublic } from "@/api/axios";
 import { AlertCircle } from "lucide-react";
 
-export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
+export function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const { dispatch } = useAuthContext();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
-      const response = await axiosPublic.post(
-        "/auth/login",
-        { email, password },
-        { withCredentials: true }
-      );
-
-      console.log("Login response:", response.data);
-
-      dispatch({
-        type: "LOGIN",
-        payload: {
-          user: response.data.user,
-          accessToken: response.data.accessToken,
-        },
+      const response = await axiosPublic.post("/auth/signup", {
+        name,
+        email,
+        password,
       });
 
-      navigate("/", { replace: true });
+      setSuccess("Account created successfully! You can now login.");
+      // Optionally redirect to login page after signup
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err: any) {
-      console.error("Login error:", err);
-      if (err.response?.status === 401) {
-        setError("Invalid email or password");
-      } else if (err.response?.status === 403) {
-        setError("Account not verified. Please check your email.");
+      console.error("Signup error:", err);
+      if (err.response?.status === 409) {
+        setError("Email already exists.");
       } else if (err.code === "ERR_NETWORK") {
         setError("Network error. Please check your connection.");
       } else {
-        setError(
-          err.response?.data?.message || "Login failed. Please try again."
-        );
+        setError(err.response?.data?.message || "Signup failed. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -75,9 +64,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Login to your account</CardTitle>
+          <CardTitle className="text-2xl">Create a new account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Fill in your details below to sign up
           </CardDescription>
         </CardHeader>
 
@@ -90,6 +79,26 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
+
+              {success && (
+                <Alert variant="success">
+                  <AlertDescription>{success}</AlertDescription>
+                </Alert>
+              )}
+
+              <Field>
+                <FieldLabel htmlFor="name">Name</FieldLabel>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Your full name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={loading}
+                  autoComplete="name"
+                />
+              </Field>
 
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -106,35 +115,28 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               </Field>
 
               <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <Link
-                    to="/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
+                <FieldLabel htmlFor="password">Password</FieldLabel>
                 <Input
                   id="password"
                   type="password"
+                  placeholder="********"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                 />
               </Field>
 
               <Field>
                 <Button type="submit" disabled={loading} className="w-full">
-                  {loading ? "Logging in..." : "Login"}
+                  {loading ? "Signing up..." : "Sign Up"}
                 </Button>
 
                 <FieldDescription className="text-center mt-2">
-                  Don&apos;t have an account?{" "}
-                  <Link to="/signup" className="underline underline-offset-4 hover:text-primary">
-                    Sign up
+                  Already have an account?{" "}
+                  <Link to="/login" className="underline underline-offset-4 hover:text-primary">
+                    Login
                   </Link>
                 </FieldDescription>
               </Field>

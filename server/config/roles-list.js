@@ -1,6 +1,6 @@
 const ALLOWED_ROLES = {
-  SUPERVISOR: 'superviseur',
-  OPERATOR: 'operateur',
+  SUPERVISOR: 'product_manager',
+  OPERATOR: 'operator',
 
 };
 

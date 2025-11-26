@@ -28,8 +28,8 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ['superviseur', 'operateur'],
-      default: 'operateur',
+      enum: ['product_manager', 'operator'],
+      default: 'product_manager',
     },
 
     refreshTokens: [
