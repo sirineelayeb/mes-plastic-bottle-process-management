@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
+import { Link } from "react-router-dom";
 export default function ListSkills() {
   const [skills, setSkills] = useState<string[]>([
     "Injection Molding",
@@ -29,9 +29,10 @@ export default function ListSkills() {
           </ul>
         </CardContent>
       </Card>
-      <Button onClick={() => window.location.href = "/manage-skills"}>
-        Manage Skills
-      </Button>
+      
+     <Link to="/skills/manage">
+  <Button>Manage Skills</Button>
+</Link>
     </div>
   );
 }

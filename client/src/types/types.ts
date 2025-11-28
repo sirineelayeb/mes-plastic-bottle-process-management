@@ -1,7 +1,27 @@
-import { type LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
+/* USER & AUTH */
 export type Role = "product_manager" | "operator";
 
+export interface User {
+  _id?: string;
+  name?: string;
+  email?: string;
+  role?: Role;
+}
+
+export interface AuthState {
+  user: User | null;
+  accessToken: string | null;
+  isLoading: boolean;
+}
+
+export type AuthAction =
+  | { type: "LOGIN"; payload: { user: User; accessToken: string } }
+  | { type: "LOGOUT" }
+  | { type: "SET_LOADING"; payload: boolean };
+
+/* MENU */
 export interface SubMenuItem {
   title: string;
   url: string;
@@ -20,32 +40,48 @@ export interface MenuGroup {
   items: MenuItem[];
 }
 
-export interface MenuConfig {
-  [key: string]: MenuGroup[];
+export type MenuConfig = Record<string, MenuGroup[]>;
+
+/* DASHBOARD */
+export type StepStatus = "completed" | "pending" | "in_progress" | "error";
+
+export interface StepItem {
+  id: string;
+  label: string;
+  status: StepStatus;
+  progress: number;
+  expectedStart: string;
+  expectedEnd: string;
+  realStart?: string;
+  realEnd?: string;
+  operators?: string[];
+  machines?: string[];
 }
 
-export interface User {
-  _id?: string;
-  name?: string;
-  email?: string;
-  role?: Role;
+
+export interface MachineItem {
+  id: string;
+  name: string;
+  type?: string;
+  status: "in_use" | "available" | "maintenance" | "out_of_service";
+  efficiency?: number;
+  unavailableFrom?: string;      
+  expectedAvailable?: string;   
 }
 
-export interface AuthState {
-  user: User | null;
-  accessToken: string | null;
-  isLoading: boolean;
+
+export interface OperatorItem {
+  id: string;
+  name: string;
+  availability: boolean;
+  skills?: string[];
+  currentStep?: string | null;
 }
 
 export interface AlertItem {
-  _id: string;
-  type: 'error' | 'warning' | 'info';
+  id: string;
+  type: "error" | "warning" | "info";
   message: string;
   step: string;
   timestamp: string;
 }
-
-export type AuthAction =
-  | { type: "LOGIN"; payload: { user: User; accessToken: string } }
-  | { type: "LOGOUT" }
-  | { type: "SET_LOADING"; payload: boolean }; 

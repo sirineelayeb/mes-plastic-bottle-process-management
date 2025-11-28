@@ -12,22 +12,22 @@ const Signup = React.lazy(() => import("@/pages/Signup")); // <-- added
 const AuthCallback = React.lazy(() => import("@/pages/AuthCallback"));
 
 // Supervisor pages
-import OperatorManagement from "@/pages/product_manager/operator-management/OperatorManagement";
-import AddOperator from "@/pages/product_manager/operator-management/AddOperator";
+import OperatorManagement from "@/pages/ProductManager/operator-management/OperatorManagement";
+import AddOperator from "@/pages/ProductManager/operator-management/AddOperator";
 
 // Operator page
 import OperatorHome from "@/pages/operator/OperatorHome";
-import ProductionSteps from "@/pages/product_manager/steps-management/ProductionSteps";
-import ManageProductionSteps from "@/pages/product_manager/steps-management/ManageProductionSteps";
-import SkillsList from "@/pages/product_manager/skills-management/AllSkills";
-import ManageSkills from "@/pages/product_manager/skills-management/ManageSkills";
-import ProductManagerHome from "@/pages/product_manager/ProductManagerHome";
-import AllMachines from "@/pages/product_manager/machines/AllMachines";
-import AddMachine from "@/pages/product_manager/machines/AddMachine";
-import InServiceMachines from "@/pages/product_manager/machines/InServiceMachines";
-import InMaintenanceMachines from "@/pages/product_manager/machines/InMaintenanceMachines";
+import ProductionSteps from "@/pages/ProductManager/steps-management/ProductionSteps";
+import ManageProductionSteps from "@/pages/ProductManager/steps-management/ManageProductionSteps";
+import SkillsList from "@/pages/ProductManager/skills-management/AllSkills";
+import ManageSkills from "@/pages/ProductManager/skills-management/ManageSkills";
+import ProductManagerHome from "@/pages/ProductManager/ProductManagerHome";
+import AllMachines from "@/pages/ProductManager/machines/AllMachines";
+import AddMachine from "@/pages/ProductManager/machines/AddMachine";
+import InServiceMachines from "@/pages/ProductManager/machines/InServiceMachines";
+import InMaintenanceMachines from "@/pages/ProductManager/machines/InMaintenanceMachines";
 import AlertsPage from "@/pages/Alerts";
-import LiveMonitoringPage from "@/pages/product_manager/Monitoring";
+import LiveMonitoringPage from "@/pages/ProductManager/Monitoring";
 
 const Router = () => {
   const { user } = useAuthContext();
