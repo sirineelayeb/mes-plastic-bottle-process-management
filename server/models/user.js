@@ -24,7 +24,12 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
-
+    skills: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Skill",
+      },
+    ],
 
     role: {
       type: String,

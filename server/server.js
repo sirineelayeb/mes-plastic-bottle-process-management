@@ -4,8 +4,13 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const http = require("http");
-require("./config/google-auth-config");const passport = require("passport");
+require("./config/google-auth-config");
+const passport = require("passport");
 const authRouter = require("./routes/auth");
+const skillRouter = require("./routes/skill");
+const machineRouter = require("./routes/machine");
+const taskRouter = require("./routes/task");
+const processRouter = require("./routes/process");
 const logger = require("./utils/logger");
 
 const app = express();
@@ -42,6 +47,10 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/skills", skillRouter);
+app.use("/machines", machineRouter);
+app.use("/tasks", taskRouter);
+app.use("/process", processRouter);
 
 app.use((req, res) => {
   res.status(404).json({
