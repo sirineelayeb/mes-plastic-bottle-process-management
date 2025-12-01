@@ -18,6 +18,7 @@ const CLIENT_URL = process.env.CLIENT_URL;
 router.post("/signup", validateSignup, authController.signup);
 
 router.post("/login", validateLogin, authController.login);
+router.post("/skills", authController.addSkillsToOperator);
 
 router.get(
   "/google",

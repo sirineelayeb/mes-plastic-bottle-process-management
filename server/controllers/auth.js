@@ -346,6 +346,58 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const addSkillsToOperator = async (req, res) => {
+  try {
+    const { operatorId, skillIds } = req.body;
+
+    if (!Array.isArray(skillIds) || skillIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "skillIds must be a non-empty array",
+      });
+    }
+
+    const user = await User.findById(operatorId);
+
+    if (!user || user.role !== "operator") {
+      return res.status(400).json({
+        success: false,
+        message: "User is not an operator",
+      });
+    }
+
+    // Remove duplicates from request
+    const uniqueIncomingSkills = [...new Set(skillIds)];
+
+    // Filter skills already assigned
+    const newSkills = uniqueIncomingSkills.filter(
+      (skillId) => !user.skills.includes(skillId)
+    );
+
+    if (newSkills.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "All provided skills are already assigned",
+      });
+    }
+
+    // Add new skills
+    user.skills.push(...newSkills);
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Skills added successfully",
+      addedSkills: newSkills,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
 module.exports = {
   signup,
   login,
@@ -357,4 +409,6 @@ module.exports = {
   logoutAll,
   forgotPassword,
   resetPassword,
+  addSkillsToOperator,
+
 };
