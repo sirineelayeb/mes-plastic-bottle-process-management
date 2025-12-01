@@ -88,10 +88,10 @@ export const menuConfig: MenuConfig = {
     {
       label: "My Workspace",
       items: [
-        { title: "Dashboard", url: "/dashboard", icon: Home },
-        { title: "My Tasks", url: "/tasks", icon: Package },
-        { title: "Report Issue", url: "/report", icon: Siren },
-        { title: "My Alerts", url: "/my-alerts", icon: Bell },
+        { title: "Dashboard", url: "/operator/dashboard", icon: Home },
+        { title: "My Tasks", url: "/operator/tasks", icon: Package },
+        { title: "Report Issue", url: "/operator/report", icon: AlertTriangle },
+        { title: "My Alerts", url: "/operator/my-alerts", icon: Bell },
       ],
     },
   ],

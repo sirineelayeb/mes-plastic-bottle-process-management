@@ -11,12 +11,13 @@ const Login = React.lazy(() => import("@/pages/Login"));
 const Signup = React.lazy(() => import("@/pages/Signup")); // <-- added
 const AuthCallback = React.lazy(() => import("@/pages/AuthCallback"));
 
+
 // Supervisor pages
 import OperatorManagement from "@/pages/ProductManager/operator-management/OperatorManagement";
 import AddOperator from "@/pages/ProductManager/operator-management/AddOperator";
 
 // Operator page
-import OperatorHome from "@/pages/operator/OperatorHome";
+
 import ProductionSteps from "@/pages/ProductManager/steps-management/ProductionSteps";
 import ManageProductionSteps from "@/pages/ProductManager/steps-management/ManageProductionSteps";
 import SkillsList from "@/pages/ProductManager/skills-management/AllSkills";
@@ -29,9 +30,16 @@ import InMaintenanceMachines from "@/pages/ProductManager/machines/InMaintenance
 import AlertsPage from "@/pages/Alerts";
 import LiveMonitoringPage from "@/pages/ProductManager/Monitoring";
 
+
+
+
+const OperatorHome = React.lazy(() => import("../pages/operator/OperatorHome"));
+const MyTasks = React.lazy(() => import("../pages/operator/MyTasks"));
+const Alertop = React.lazy(() => import("../pages/operator/Alertop"));
+const ReportIssue = React.lazy(() => import("../pages/operator/ReportIssue"));
 const Router = () => {
   const { user } = useAuthContext();
-  const role = user?.role as Role; // "product_manager" | "operator" | undefined
+  const role = user?.role as Role; 
 
   const routes = [
     /* ====================== PUBLIC ====================== */
@@ -77,7 +85,7 @@ const Router = () => {
                   ) : role === "product_manager" ? (
                     <Navigate to="/dashboard" replace />
                   ) : role === "operator" ? (
-                    <OperatorHome />
+                    <Navigate to="/operator/dashboard" replace />
                   ) : (
                     <Navigate to="/login" replace />
                   )}
@@ -205,19 +213,46 @@ const Router = () => {
               : []),
 
             /* ------------------- OPERATOR ROUTES ------------------- */
-            ...(role === "operator"
-              ? [
-                  {
-                    path: "/operator-home",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <OperatorHome />
-                      </React.Suspense>
-                    ),
-                  },
-                  // add more operator routes here later
-                ]
-              : []),
+           ...(role === "operator"
+  ? [
+      {
+        path: "/operator/dashboard",
+        element: (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <OperatorHome />
+          </React.Suspense>
+        ),
+      },
+     {
+        path: "/operator/tasks",
+        element: (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <MyTasks />
+          </React.Suspense>
+        ),
+      },
+       {
+        path: "/operator/report",
+        element: (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <ReportIssue isOpen={false} onClose={function (): void {
+              throw new Error("Function not implemented.");
+            } } onSubmit={function (data: { title: string; description: string; reporter: string; date: string; }): void {
+              throw new Error("Function not implemented.");
+            } } reporterName={""}/>
+          </React.Suspense>
+        ),
+      },
+       {
+        path: "/operator/my-alerts",
+        element: (
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <Alertop />
+          </React.Suspense>
+        ),
+      },
+    ]
+  : []),
 
             /* Catch-all */
             {

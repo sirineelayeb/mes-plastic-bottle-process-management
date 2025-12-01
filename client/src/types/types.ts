@@ -85,3 +85,58 @@ export interface AlertItem {
   step: string;
   timestamp: string;
 }
+
+
+
+/* OPERATOR DASHBOARD - NEW TYPES */
+
+export interface OperatorInfo {
+  name: string;
+  employeeId: string;
+  skills: string[];
+  activeSkills: string[];
+}
+
+export interface OperatorMachine {
+  name: string;
+  temperature: string;
+  pressure: string;
+}
+
+ export interface Material {
+  name: string;
+  quantity: string;
+}
+
+export interface OperatorStep {
+  id: string;
+  label: string;
+  product: string;
+  status: "in_progress" | "pending" | "completed";
+  progress: number;
+  expectedStart: string;
+  expectedEnd: string;
+  realStart?: string;
+  realEnd?: string;
+  startTime?: string;
+  estimatedEnd?: string;
+  machine?: OperatorMachine;
+  materials?: Material[];
+  instructions?: string;
+  timeElapsed?: number;
+  estimatedDuration?: number;
+}
+
+export interface OperatorAlert {
+  id: number;
+  type: "warning" | "info" | "error";
+  message: string;
+  time: string;
+}
+
+export interface OperatorStats {
+  stepsCompleted: number;
+  totalSteps: number;
+  efficiency: number;
+  hoursWorked: number;
+}
