@@ -140,3 +140,16 @@ export interface OperatorStats {
   efficiency: number;
   hoursWorked: number;
 }
+
+export interface UseFetchOptions {
+    immediate?: boolean;
+    useAuth?: boolean;
+    dependencies?: any[];
+}
+
+export interface UseFetchReturn<T> {
+    data: T | null;
+    loading: boolean;
+    error: string | null;
+    refetch: () => Promise<void>;
+}

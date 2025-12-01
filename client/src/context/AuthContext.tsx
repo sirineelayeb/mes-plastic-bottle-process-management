@@ -47,7 +47,6 @@ export const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) =
           withCredentials: true,
         });
 
-        console.log("erjeeeeeeeel :===============",response);
 
         if (isMounted) {
           dispatch({
@@ -73,7 +72,6 @@ export const AuthContextProvider: React.FC<AuthProviderProps> = ({ children }) =
     };
   }, []);
 
-  console.log("authentification state :",state);
 
   return (
     <AuthContext.Provider value={{ ...state, dispatch }}>

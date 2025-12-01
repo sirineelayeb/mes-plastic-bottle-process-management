@@ -8,6 +8,7 @@ import ProductionPieChart from "@/components/productmanager/ProductionPieChart";
 import ProductionTimeline from "@/components/productmanager/ProductionTimeline"; // New component
 
 import { batchInfo, steps, machines, operators, alerts } from "@/components/productmanager/mockData";
+import useFetch from "@/hooks/useFetchData";
 
 export default function ProductManagerHome() {
   return (

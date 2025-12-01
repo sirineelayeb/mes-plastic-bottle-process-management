@@ -1,14 +1,10 @@
-'use client';
-import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import useFetch from "@/hooks/useFetchData";
 export default function ListSkills() {
-  const [skills, setSkills] = useState<string[]>([
-    "Injection Molding",
-    "Quality Control",
-    "Blow Molding",
-  ]);
+
+  const {data, loading, error} = useFetch("/skills");
 
   return (
     <div className="p-6 space-y-6">
@@ -16,18 +12,19 @@ export default function ListSkills() {
         <CardHeader>
           <CardTitle>All Skills</CardTitle>
         </CardHeader>
-        <CardContent>
+        {loading && <CardContent>Loading skills...</CardContent>}
+        {data && data.success &&<CardContent>
           <ul className="space-y-2">
-            {skills.map((skill, index) => (
+            {data.skills.map((skill:any, index:any) => (
               <li
                 key={index}
                 className="border p-2 rounded flex justify-between items-center"
               >
-                <span>{skill}</span>
+                <span>{skill.name}</span>
               </li>
             ))}
           </ul>
-        </CardContent>
+        </CardContent>}
       </Card>
       
      <Link to="/skills/manage">
