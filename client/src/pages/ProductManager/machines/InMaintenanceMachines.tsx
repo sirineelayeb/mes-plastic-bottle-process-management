@@ -1,120 +1,132 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Cog } from 'lucide-react';
-import {
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  PaginationContent,
-  PaginationPrevious,
-  PaginationNext,
-} from '@/components/ui/pagination';
-import { machines as allMachines } from '@/components/productmanager/mockData';
-import type { MachineItem } from '@/types/types';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Pagination, PaginationItem, PaginationLink, PaginationContent, PaginationPrevious, PaginationNext } from '@/components/ui/pagination';
+import { axiosPublic } from '@/api/axios';
+import { toast, Toaster } from 'react-hot-toast';
+import type { Machine } from '@/types/types';
 
-const ITEMS_PER_PAGE = 4; // 4 machines per page
+const statusStyles: Record<Machine['status'], string> = {
+en_service: 'bg-green-100 text-green-700 border-green-300',
+en_arret: 'bg-red-100 text-red-700 border-red-300',
+en_maintenance: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+};
+
+const ITEMS_PER_PAGE = 4;
 
 export default function InMaintenanceMachines() {
-  const [currentPage, setCurrentPage] = useState(1);
+const [machines, setMachines] = useState<Machine[]>([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState<string | null>(null);
+const [currentPage, setCurrentPage] = useState(1);
 
-  // Filter only machines under maintenance
-  const maintenanceMachines = allMachines.filter((m) => m.status === 'maintenance');
+useEffect(() => {
+const fetchMachines = async () => {
+try {
+const res = await axiosPublic.get('/machines');
+setMachines(res.data.machines);
+} catch (err) {
+console.error(err);
+setError('Failed to load machines');
+toast.error('Failed to load machines');
+} finally {
+setLoading(false);
+}
+};
+fetchMachines();
+}, []);
 
-  const totalPages = Math.ceil(maintenanceMachines.length / ITEMS_PER_PAGE);
+if (loading) return <p>Loading machines...</p>;
+if (error) return <p className="text-red-500">{error}</p>;
 
-  const paginatedMachines = maintenanceMachines.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+const maintenanceMachines = machines.filter(m => m.status === 'en_maintenance');
+const totalPages = Math.ceil(maintenanceMachines.length / ITEMS_PER_PAGE);
+const paginatedMachines = maintenanceMachines.slice(
+(currentPage - 1) * ITEMS_PER_PAGE,
+currentPage * ITEMS_PER_PAGE
+);
 
-  const handlePageChange = (page: number) => setCurrentPage(page);
+const formatDate = (iso?: string) => iso ? new Date(iso).toLocaleString() : '-';
 
-  return (
-    <div className="min-h-screen p-4 sm:p-6 bg-background">
-      <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2 mb-6">
-        <Cog className="w-8 h-8 text-primary" /> Machines Under Maintenance
-      </h1>
+return ( <div className="min-h-screen p-4 sm:p-6 bg-background"> <Toaster position="top-right" reverseOrder={false} />
 
-      {paginatedMachines.length === 0 ? (
-        <p className="text-center text-muted-foreground">
-          No machines in maintenance.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-          {paginatedMachines.map((machine: MachineItem) => (
-            <div
-              key={machine.id}
-              className="bg-card border rounded-lg p-4 flex flex-col gap-2 shadow-sm"
-            >
-              <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-lg">{machine.name}</h2>
-                <span className="px-2 py-1 rounded-lg border bg-orange-100 text-orange-700 border-orange-200">
-                  Maintenance
-                </span>
+
+  <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2 mb-6">
+    <Cog className="w-8 h-8 text-primary" /> Machines Under Maintenance
+  </h1>
+
+  {paginatedMachines.length === 0 ? (
+    <p className="text-center text-muted-foreground">No machines in maintenance.</p>
+  ) : (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+      {paginatedMachines.map(machine => (
+        <Card key={machine._id} className="p-4 flex flex-col gap-2 shadow-sm border rounded-lg">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-lg">{machine.name}</h2>
+            <Badge className={`px-2 py-1 rounded-lg border ${statusStyles[machine.status]}`}>
+              Maintenance
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">{machine.description || '-'}</p>
+
+          {machine.unavailableFrom && machine.expectedAvailable ? (
+            <p className="text-sm text-muted-foreground">
+              Unavailable: <span className="font-medium">{formatDate(machine.unavailableFrom)}</span>
+              <br />
+              Expected Availability: <span className="font-medium">{formatDate(machine.expectedAvailable)}</span>
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">No schedule info</p>
+          )}
+
+          {machine.efficiency !== undefined && (
+            <div className="mt-2">
+              <p className="text-sm">Efficiency: {machine.efficiency}%</p>
+              <div className="w-full bg-secondary h-1.5 rounded-full">
+                <div
+                  className="bg-primary h-1.5 rounded-full"
+                  style={{ width: `${machine.efficiency}%` }}
+                />
               </div>
-
-              <p className="text-sm text-muted-foreground">{machine.type || '-'}</p>
-
-              {machine.unavailableFrom && machine.expectedAvailable ? (
-                <p className="text-sm text-muted-foreground">
-                  Unavailable: <span className="font-medium">{machine.unavailableFrom}</span>
-                  <br />
-                  Expected Availability:{' '}
-                  <span className="font-medium">{machine.expectedAvailable}</span>
-                </p>
-              ) : (
-                <p className="text-sm text-muted-foreground">No schedule info</p>
-              )}
-
-              {machine.efficiency !== undefined && (
-                <p className="text-sm text-muted-foreground">
-                  Efficiency: <span className="font-medium">{machine.efficiency}%</span>
-                </p>
-              )}
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="mt-6 flex justify-center">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                />
-              </PaginationItem>
-
-              {Array.from({ length: totalPages }, (_, idx) => (
-                <PaginationItem key={idx}>
-                  <PaginationLink
-                    isActive={currentPage === idx + 1}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handlePageChange(idx + 1);
-                    }}
-                  >
-                    {idx + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() =>
-                    currentPage < totalPages && handlePageChange(currentPage + 1)
-                  }
-                  className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
+          )}
+        </Card>
+      ))}
     </div>
-  );
+  )}
+
+  {/* Pagination */}
+  {totalPages > 1 && (
+    <div className="mt-6 flex justify-center">
+      <Pagination>
+        <PaginationPrevious
+          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+        />
+        <PaginationContent>
+          {Array.from({ length: totalPages }, (_, idx) => idx + 1).map(page => (
+            <PaginationItem key={page}>
+              <PaginationLink
+                isActive={page === currentPage}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+        </PaginationContent>
+        <PaginationNext
+          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+        />
+      </Pagination>
+    </div>
+  )}
+</div>
+
+
+);
 }

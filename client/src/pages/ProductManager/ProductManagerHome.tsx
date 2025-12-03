@@ -1,57 +1,108 @@
-import DashboardHeader from "@/components/productmanager/DashboardHeader";
-import BatchInfoCard from "@/components/productmanager/BatchInfoCard";
+import { useEffect, useState } from "react";
+import OperatorsChart from "@/components/productmanager/OperatorsChart";
+import TasksStatusChart from "@/components/productmanager/TasksStatusChart";
+import MachinesStatusChart from "@/components/productmanager/MachinesStatusChart";
 import ProductionSteps from "@/components/productmanager/ProductionSteps";
-import MachineStatusList from "@/components/productmanager/MachineStatusList";
+import ProductionTimeline from "@/components/productmanager/ProductionTimeline";
 import OperatorsList from "@/components/productmanager/OperatorsList";
-import AlertsList from "@/components/productmanager/AlertsList";
-import ProductionPieChart from "@/components/productmanager/ProductionPieChart";
-import ProductionTimeline from "@/components/productmanager/ProductionTimeline"; // New component
-
-import { batchInfo, steps, machines, operators, alerts } from "@/components/productmanager/mockData";
+import MachineStatusList from "@/components/productmanager/MachineStatusList";
+import { axiosPublic } from "@/api/axios";
+import type { Task, Operator, Machine } from "@/types/types";
 
 export default function ProductManagerHome() {
-  return (
-    <div className="p-6 space-y-8">
+const [tasks, setTasks] = useState<Task[]>([]);
+const [operators, setOperators] = useState<Operator[]>([]);
+const [machines, setMachines] = useState<Machine[]>([]);
 
-      {/* -------------------- Dashboard Header -------------------- */}
-      <DashboardHeader title="Product Manager Dashboard" />
+// Fetch tasks
+useEffect(() => {
+const fetchTasks = async () => {
+try {
+const res = await axiosPublic.get("/tasks");
+setTasks(res.data.tasks);
+} catch (error) {
+console.error("Failed to load tasks:", error);
+}
+};
+fetchTasks();
+}, []);
 
-      {/* -------------------- Top Grid: Batch Info & Pie Chart -------------------- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <BatchInfoCard
-          productName={batchInfo.productName}
-          quantity={batchInfo.quantity}
-          progress={batchInfo.progress}
-        />
+// Fetch operators
+useEffect(() => {
+const fetchOperators = async () => {
+try {
+const res = await axiosPublic.get("/auth/users");
+setOperators(res.data.operators);
+} catch (error) {
+console.error("Failed to load operators:", error);
+}
+};
+fetchOperators();
+}, []);
 
-        <ProductionPieChart
-          completed={batchInfo.progress}
-          remaining={batchInfo.quantity - batchInfo.progress}
-        />
-      </div>
+// Fetch machines
+useEffect(() => {
+const fetchMachines = async () => {
+try {
+const res = await axiosPublic.get("/machines");
+setMachines(res.data.machines);
+} catch (error) {
+console.error("Failed to load machines:", error);
+}
+};
+fetchMachines();
+}, []);
 
-      {/* -------------------- Production Timeline -------------------- */}
-      <div className="grid grid-cols-1 gap-6">
-        <ProductionTimeline steps={steps} />
-      </div>
+// Compute operator assignment counts
+const assignedOperatorIds = new Set(tasks.flatMap(t => t.operators.map(op => op._id)));
+const operatorsAssigned = operators.filter(op => assignedOperatorIds.has(op._id)).length;
+const operatorsUnassigned = operators.length - operatorsAssigned;
 
-      {/* -------------------- Main Dashboard Components -------------------- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Production Steps with details */}
-        <ProductionSteps steps={steps} />
+// Compute task status counts
+const tasksInProgress = tasks.filter(t => t.status === "In Progress").length;
+const tasksCompleted = tasks.filter(t => t.status === "Completed").length;
+const tasksPending = tasks.filter(t => t.status === "Pending").length;
 
-        {/* Machines and Operators */}
-        <div className="space-y-6">
-          <MachineStatusList machines={machines} />
-          <OperatorsList operators={operators} />
-        </div>
-      </div>
+// Compute machine status counts
+const machinesInService = machines.filter(m => m.status === "en_service").length;
+const machinesStopped = machines.filter(m => m.status === "en_arret").length;
+const machinesMaintenance = machines.filter(m => m.status === "en_maintenance").length;
 
-      {/* -------------------- Alerts -------------------- */}
-      <div className="grid grid-cols-1 gap-6">
-        <AlertsList alerts={alerts} />
-      </div>
+return ( <div className="p-6 space-y-8"> <h1 className="text-2xl font-bold mb-4">Production Dashboard</h1>
 
-    </div>
-  );
+
+  {/* -------------------- Charts -------------------- */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <OperatorsChart assigned={operatorsAssigned} unassigned={operatorsUnassigned} />
+    <TasksStatusChart
+      inProgress={tasksInProgress}
+      completed={tasksCompleted}
+      pending={tasksPending}
+    />
+    <MachinesStatusChart
+      inService={machinesInService}
+      stopped={machinesStopped}
+      maintenance={machinesMaintenance}
+    />
+  </div>
+
+  {/* -------------------- Production Tasks -------------------- */}
+  <div className="grid grid-cols-1 gap-6">
+    <ProductionSteps tasks={tasks} />
+  </div>
+
+  {/* -------------------- Production Timeline -------------------- */}
+  <div className="grid grid-cols-1 gap-6">
+    <ProductionTimeline tasks={tasks} />
+  </div>
+
+  {/* -------------------- Operators & Machines -------------------- */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <OperatorsList operators={operators} />
+    <MachineStatusList machines={machines} />
+  </div>
+</div>
+
+
+);
 }
