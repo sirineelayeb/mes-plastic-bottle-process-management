@@ -19,7 +19,9 @@ router.post("/signup", validateSignup, authController.signup);
 
 router.post("/login", validateLogin, authController.login);
 router.post("/skills", authController.addSkillsToOperator);
-
+router.put("/operators/edit", authController.editOperator);
+router.delete("/operators/:operatorId", authController.deleteOperator);
+  
 router.get(
   "/google",
   passport.authenticate("google", {
@@ -42,6 +44,10 @@ router.get("/refresh", authController.refreshAccessToken);
 router.get("/redirect", authenticateToken, authController.redirect);
 
 router.get("/me", authenticateToken, authController.getMe);
+
+// fetch operators
+
+router.get("/users", authController.getOperators);
 
 router.post("/logout", authController.logout);
 

@@ -5,7 +5,7 @@ const Machine = require("../models/machine");
 // Create Task
 module.exports.createTask = async (req, res) => {
   try {
-    const { taskName, skills, machine, dateStart , dateEnd } = req.body;
+    const { taskName, skills, machine, dateStart, dateEnd, operators } = req.body;
 
     // Validate skills array
     if (!Array.isArray(skills) || skills.length === 0) {
@@ -40,7 +40,7 @@ module.exports.createTask = async (req, res) => {
     const task = await Task.create({
       taskName,
       skills: uniqueSkills,
-      machine,dateStart ,dateEnd 
+      machine,dateStart ,dateEnd ,operators
     });
 
     res.status(201).json({
@@ -59,6 +59,7 @@ module.exports.getTasks = async (req, res) => {
     const tasks = await Task.find()
       .populate("skills", "name description")
       .populate("machine", "idMachine name status")
+        .populate("operators", "name") 
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -76,8 +77,8 @@ module.exports.getTaskById = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id)
       .populate("skills", "name description")
-      .populate("machine", "idMachine name status");
-
+      .populate("machine", "idMachine name status")
+      .populate("operators", "name"); 
     if (!task) {
       return res.status(404).json({
         success: false,
@@ -174,3 +175,66 @@ module.exports.deleteTask = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
+// Get number of tasks with status "In Progress"
+module.exports.getTasksInProgressCount = async (req, res) => {
+  try {
+    const count = await Task.countDocuments({ status: "In Progress" });
+    res.status(200).json({ success: true, tasksInProgress: count });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+// Get number of tasks with status "Completed"
+module.exports.getTasksCompletedCount = async (req, res) => {
+  try {
+    const count = await Task.countDocuments({ status: "Completed" });
+    res.status(200).json({ success: true, tasksCompleted: count });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Get number of tasks with status "Pending"
+module.exports.getTasksPendingCount = async (req, res) => {
+  try {
+    const count = await Task.countDocuments({ status: "Pending" });
+    res.status(200).json({ success: true, tasksPending: count });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Get number of operators assigned / unassigned to any task
+module.exports.getOperatorsAssignmentStats = async (req, res) => {
+  try {
+    // All tasks with operators
+    const tasks = await Task.find().select("operators");
+    const assignedOperatorIds = new Set(tasks.flatMap(t => t.operators.map(op => op.toString())));
+
+    const allOperators = await Operator.find().select("_id name");
+    const operatorsAssigned = allOperators.filter(op => assignedOperatorIds.has(op._id.toString())).length;
+    const operatorsUnassigned = allOperators.length - operatorsAssigned;
+
+    res.status(200).json({
+      success: true,
+      operatorsAssigned,
+      operatorsUnassigned,
+      totalOperators: allOperators.length
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Optional: Total tasks count
+module.exports.getTotalTasksCount = async (req, res) => {
+  try {
+    const count = await Task.countDocuments();
+    res.status(200).json({ success: true, totalTasks: count });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+

@@ -12,6 +12,7 @@ const machineRouter = require("./routes/machine");
 const taskRouter = require("./routes/task");
 const processRouter = require("./routes/process");
 const logger = require("./utils/logger");
+const initMQTT = require("./mqtt/mqttClient"); // 🔥 Import MQTT
 
 const app = express();
 const server = http.createServer(app);
@@ -74,6 +75,10 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     logger.success("Database", "Connected to MongoDB");
+    
+    // 🔥 Initialize MQTT after DB connection
+    const mqttClient = initMQTT();
+    
     server.listen(PORT, () => {
       logger.success("Server", `Server running on port ${PORT}`);
       logger.info("Server", `Environment: ${process.env.NODE_ENV || "development"}`);
@@ -86,8 +91,8 @@ mongoose
 
 process.on("SIGTERM", () => {
   logger.warn("Server", "SIGTERM received. Closing server gracefully...");
-  io.close(() => {
-    logger.info("Socket", "Socket.IO connections closed");
+  server.close(() => {
+    logger.info("Server", "HTTP server closed");
     mongoose.connection.close(() => {
       logger.info("Database", "MongoDB connection closed");
       process.exit(0);

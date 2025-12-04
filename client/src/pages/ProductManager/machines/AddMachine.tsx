@@ -1,143 +1,92 @@
-
-import  { useState } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { MachineItem } from "@/types/types"; // import from types.ts
+import { Textarea } from "@/components/ui/textarea";
+import { axiosPublic } from "@/api/axios";
+import { toast, Toaster } from "react-hot-toast";
+import { Plus } from 'lucide-react';
+
+type MachineStatus = "en_service" | "en_arret" | "en_maintenance";
 
 export default function AddMachine() {
   const [name, setName] = useState("");
-  const [type, setType] = useState("");
-  const [status, setStatus] = useState<MachineItem["status"]>("available");
-  const [unavailableFrom, setUnavailableFrom] = useState("");
-  const [expectedAvailable, setExpectedAvailable] = useState("");
-  const [machines, setMachines] = useState<MachineItem[]>([]);
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState<MachineStatus>("en_arret");
 
-  const handleAddMachine = () => {
-    if (!name || !type) {
-      alert("Name and Type are required.");
+  const handleAddMachine = async () => {
+    if (!name) {
+      toast.error("Machine Name is required.");
       return;
     }
 
-    const newMachine: MachineItem = {
-      id: `m${machines.length + 1}`, // string id to match MachineItem
+    const newMachine = {
       name,
-      type,
+      description,
       status,
-      unavailableFrom: unavailableFrom || undefined,
-      expectedAvailable: expectedAvailable || undefined,
-      efficiency: undefined, // optional, can add input later
     };
 
-    setMachines([...machines, newMachine]);
+    try {
+      const res = await axiosPublic.post("/machines", newMachine);
+      toast.success(`Machine "${res.data.machine.name}" added successfully!`);
 
-    // Reset form
-    setName("");
-    setType("");
-    setStatus("available");
-    setUnavailableFrom("");
-    setExpectedAvailable("");
+      // Reset form
+      setName("");
+      setDescription("");
+      setStatus("en_arret");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to add machine");
+    }
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Add New Machine</h1>
+    <div className="p-6 space-y-6 max-w-2xl mx-auto">
+      <Toaster position="top-right" reverseOrder={false} />
+      <h1 className="text-2xl font-bold flex items-center gap-3">
+        <Plus className="w-6 h-6 text-primary" />
+        Add New Machine
+      </h1>
 
       <Card className="p-6 space-y-4">
-        {/* Machine Name */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">Machine Name</label>
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter machine name"
+          <label className="text-sm font-medium">Machine Name *</label>
+          <Input 
+            value={name} 
+            onChange={(e) => setName(e.target.value)} 
+            placeholder="Enter machine name" 
           />
         </div>
 
-        {/* Machine Type */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">Machine Type</label>
-          <Input
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            placeholder="Enter machine type"
+          <label className="text-sm font-medium">Description</label>
+          <Textarea 
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)} 
+            placeholder="Enter machine description (optional)" 
+            rows={3}
           />
         </div>
 
-        {/* Status */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Status</label>
-          <Select
-            onValueChange={(val) => setStatus(val as MachineItem["status"])}
-            defaultValue="available"
-          >
+          <Select onValueChange={(val) => setStatus(val as MachineStatus)} defaultValue="en_arret">
             <SelectTrigger>
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="available">Available</SelectItem>
-              <SelectItem value="in_use">In Use</SelectItem>
-              <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="out_of_service">Out of Service</SelectItem>
+              <SelectItem value="en_service">In Service</SelectItem>
+              <SelectItem value="en_arret">Stopped</SelectItem>
+              <SelectItem value="en_maintenance">Under Maintenance</SelectItem>
             </SelectContent>
           </Select>
-        </div>
-
-        {/* Unavailable From */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Unavailable From</label>
-          <Input
-            type="datetime-local"
-            value={unavailableFrom}
-            onChange={(e) => setUnavailableFrom(e.target.value)}
-          />
-        </div>
-
-        {/* Expected Availability */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Expected Availability</label>
-          <Input
-            type="datetime-local"
-            value={expectedAvailable}
-            onChange={(e) => setExpectedAvailable(e.target.value)}
-          />
         </div>
 
         <Button onClick={handleAddMachine} className="mt-2 w-full">
           Add Machine
         </Button>
       </Card>
-
-      {/* Display Added Machines */}
-      {machines.length > 0 && (
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold">Machines Added</h2>
-          {machines.map((machine) => (
-            <Card key={machine.id} className="p-4 border">
-              <p className="font-semibold">
-                {machine.name} ({machine.type})
-              </p>
-              <p>Status: {machine.status.replace("_", " ").toUpperCase()}</p>
-              {machine.unavailableFrom && (
-                <p>
-                  Unavailable From:{" "}
-                  {new Date(machine.unavailableFrom).toLocaleString()}
-                </p>
-              )}
-              {machine.expectedAvailable && (
-                <p>
-                  Expected Available:{" "}
-                  {new Date(machine.expectedAvailable).toLocaleString()}
-                </p>
-              )}
-              {machine.efficiency !== undefined && (
-                <p>Efficiency: {machine.efficiency}%</p>
-              )}
-            </Card>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

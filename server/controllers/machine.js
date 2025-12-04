@@ -2,13 +2,20 @@ const Machine = require("../models/machine");
 
 module.exports.createMachine = async (req, res) => {
   try {
-    const { name, description, status } = req.body;
+    const { name, description = "", status = "en_arret" } = req.body;
 
-    // Count existing documents
-    const count = await Machine.countDocuments();
+    if (!name) {
+      return res.status(400).json({ success: false, message: "Machine name is required" });
+    }
 
-    // Generate new ID (e.g., MCH-001)
-    const idMachine = `MCH-${String(count + 1).padStart(3, "0")}`;
+    // Ensure status is valid
+    const allowedStatuses = ["en_service", "en_arret", "en_maintenance"];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid status value" });
+    }
+
+    // Generate unique idMachine
+    const idMachine = `MCH-${Date.now().toString().slice(-6)}`;
 
     const machine = await Machine.create({
       idMachine,
@@ -23,6 +30,7 @@ module.exports.createMachine = async (req, res) => {
       machine,
     });
   } catch (error) {
+    console.error("Create Machine Error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -112,3 +120,38 @@ module.exports.deleteMachine = async (req, res) => {
   }
 };
 
+// -------------------- Dashboard Metrics for Machines --------------------
+
+// Get total machines count
+module.exports.getTotalMachinesCount = async (req, res) => {
+  try {
+    const count = await Machine.countDocuments();
+    res.status(200).json({ success: true, totalMachines: count });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Get machines count by status
+module.exports.getMachinesCountByStatus = async (req, res) => {
+  try {
+    const statusCounts = await Machine.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Convert array to object { status: count }
+    const counts = statusCounts.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {});
+
+    res.status(200).json({ success: true, counts });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

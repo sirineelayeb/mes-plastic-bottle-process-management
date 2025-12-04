@@ -1,57 +1,58 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Clock, Calendar, User, Cpu } from "lucide-react";
-import type { StepItem } from "@/types/types";
+import type { Task } from "@/types/types";
 
 interface ProductionStepsProps {
-  steps: StepItem[];
+  tasks: Task[];
 }
 
-export default function ProductionSteps({ steps }: ProductionStepsProps) {
-  if (!steps.length)
-    return <p className="text-center text-muted-foreground">No production steps available</p>;
+export default function ProductionSteps({ tasks }: ProductionStepsProps) {
+  if (!tasks.length)
+    return <p className="text-center text-muted-foreground">No production tasks available</p>;
 
   return (
     <div className="space-y-5">
-      {steps.map((step) => (
-        <Card key={step.id} className="rounded-xl shadow-sm hover:shadow-md transition-shadow">
+      {tasks.map((task) => (
+        <Card key={task._id} className="rounded-xl shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex justify-between items-center">
-            <CardTitle className="text-base font-semibold">{step.label}</CardTitle>
+            <CardTitle className="text-base font-semibold">{task.taskName}</CardTitle>
 
             {/* Status badge */}
             <span
               className={`px-3 py-1 text-xs rounded-full capitalize ${
-                step.status === "completed"
+                task.dateEnd
                   ? "bg-green-500 text-white"
-                  : step.status === "in_progress"
+                  : task.dateStart
                   ? "bg-blue-500 text-white"
-                  : step.status === "pending"
-                  ? "bg-gray-400 text-white"
-                  : "bg-red-500 text-white"
+                  : "bg-gray-400 text-white"
               }`}
             >
-              {step.status.replace("_", " ")}
+              {task.dateEnd
+                ? "completed"
+                : task.dateStart
+                ? "in_progress"
+                : "pending"}
             </span>
           </CardHeader>
 
           <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-2">
-
-            {/* Expected Start */}
+            {/* Start Date */}
             <div>
               <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Clock size={14} />  Start Date
+                <Clock size={14} /> Start Date
               </p>
               <p className="font-medium text-sm mt-1">
-                {step.realStart ? new Date(step.realStart).toLocaleString() : "-"}
+                {task.dateStart ? new Date(task.dateStart).toLocaleString() : "-"}
               </p>
             </div>
 
-            {/* Expected End */}
+            {/* End Date */}
             <div>
               <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Calendar size={14} />  End Date
+                <Calendar size={14} /> End Date
               </p>
               <p className="font-medium text-sm mt-1">
-                {step.realEnd ? new Date(step.realEnd).toLocaleString() : "-"}
+                {task.dateEnd ? new Date(task.dateEnd).toLocaleString() : "-"}
               </p>
             </div>
 
@@ -60,11 +61,11 @@ export default function ProductionSteps({ steps }: ProductionStepsProps) {
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <User size={14} /> Operators
               </p>
-              {step.operators && step.operators.length > 0 ? (
+              {task.operators && task.operators.length > 0 ? (
                 <div className="flex flex-wrap gap-1 mt-1">
-                  {step.operators.map((op, idx) => (
-                    <span key={idx} className="text-xs bg-muted px-2 py-0.5 rounded-md">
-                      {op}
+                  {task.operators.map((op) => (
+                    <span key={op._id} className="text-xs bg-muted px-2 py-0.5 rounded-md">
+                      {op.name}
                     </span>
                   ))}
                 </div>
@@ -78,17 +79,7 @@ export default function ProductionSteps({ steps }: ProductionStepsProps) {
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <Cpu size={14} /> Machines
               </p>
-              {step.machines && step.machines.length > 0 ? (
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {step.machines.map((m, idx) => (
-                    <span key={idx} className="text-xs bg-muted px-2 py-0.5 rounded-md">
-                      {m}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="font-medium text-sm mt-1">Not assigned</p>
-              )}
+              <p className="font-medium text-sm mt-1">{task.machine?.name || "Not assigned"}</p>
             </div>
 
             {/* Progress */}
@@ -97,20 +88,25 @@ export default function ProductionSteps({ steps }: ProductionStepsProps) {
               <div className="w-full bg-muted rounded-full h-3">
                 <div
                   className={`h-3 rounded-full transition-all duration-300 ${
-                    step.status === "completed"
+                    task.dateEnd
                       ? "bg-green-500"
-                      : step.status === "in_progress"
+                      : task.dateStart
                       ? "bg-blue-500"
-                      : step.status === "pending"
-                      ? "bg-gray-400"
-                      : "bg-red-500"
+                      : "bg-gray-400"
                   }`}
-                  style={{ width: `${step.progress}%` }}
+                  style={{
+                    width: task.dateEnd
+                      ? "100%"
+                      : task.dateStart
+                      ? "50%"
+                      : "0%",
+                  }}
                 />
               </div>
-              <p className="text-xs text-right mt-1 font-medium">{step.progress}%</p>
+              <p className="text-xs text-right mt-1 font-medium">
+                {task.dateEnd ? "100%" : task.dateStart ? "50%" : "0%"}
+              </p>
             </div>
-
           </CardContent>
         </Card>
       ))}

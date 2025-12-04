@@ -8,7 +8,6 @@ import type { Role } from "@/types/types";
 // Lazy loaded common pages
 const MainLayout = React.lazy(() => import("@/layouts/MainLayout"));
 const Login = React.lazy(() => import("@/pages/Login"));
-const Signup = React.lazy(() => import("@/pages/Signup")); // <-- added
 const AuthCallback = React.lazy(() => import("@/pages/AuthCallback"));
 
 
@@ -18,8 +17,6 @@ import AddOperator from "@/pages/ProductManager/operator-management/AddOperator"
 
 // Operator page
 
-import ProductionSteps from "@/pages/ProductManager/steps-management/ProductionSteps";
-import ManageProductionSteps from "@/pages/ProductManager/steps-management/ManageProductionSteps";
 import SkillsList from "@/pages/ProductManager/skills-management/AllSkills";
 import ManageSkills from "@/pages/ProductManager/skills-management/ManageSkills";
 import ProductManagerHome from "@/pages/ProductManager/ProductManagerHome";
@@ -29,6 +26,9 @@ import InServiceMachines from "@/pages/ProductManager/machines/InServiceMachines
 import InMaintenanceMachines from "@/pages/ProductManager/machines/InMaintenanceMachines";
 import AlertsPage from "@/pages/Alerts";
 import LiveMonitoringPage from "@/pages/ProductManager/Monitoring";
+import Signup from "@/pages/SignUp";
+import ManageTasks from "@/pages/ProductManager/tasks-management/ManageTasks";
+import AddTask from "@/pages/ProductManager/tasks-management/AddTask";
 
 
 
@@ -130,18 +130,18 @@ const Router = () => {
                     ),
                   },
                   {
-                    path: "/steps/all",
+                    path: "/tasks/manage",
                     element: (
                       <React.Suspense fallback={<div>Loading...</div>}>
-                        <ProductionSteps />
+                        <ManageTasks />
                       </React.Suspense>
                     ),
                   },
                    {
-                    path: "/steps/manage",
+                    path: "/tasks/add",
                     element: (
                       <React.Suspense fallback={<div>Loading...</div>}>
-                        <ManageProductionSteps />
+                        <AddTask />
                       </React.Suspense>
                     ),
                   },
