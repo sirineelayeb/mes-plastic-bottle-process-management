@@ -6,13 +6,13 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Pagination, PaginationItem, PaginationLink, PaginationContent, PaginationPrevious, PaginationNext } from '@/components/ui/pagination';
 import { axiosPublic } from '@/api/axios';
-import { toast, Toaster } from 'react-hot-toast';
 import type { Machine } from '@/types/types';
+import { toast } from 'sonner';
 
-const statusStyles: Record<Machine['status'], string> = {
-en_service: 'bg-green-100 text-green-700 border-green-300',
-en_arret: 'bg-red-100 text-red-700 border-red-300',
-en_maintenance: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+const statusStyles: Record<Machine["status"], string> = {
+en_service: "bg-green-100 text-green-700 border-green-300 rounded-[10px]",
+en_arret: "bg-red-700/20 font-bold text-red-700 rounded-[10px]",
+en_maintenance: "bg-primary/20 text-primary font-bold rounded-[10px]",
 };
 
 const ITEMS_PER_PAGE = 4;
@@ -51,7 +51,7 @@ currentPage * ITEMS_PER_PAGE
 
 const formatDate = (iso?: string) => iso ? new Date(iso).toLocaleString() : '-';
 
-return ( <div className="min-h-screen p-4 sm:p-6 bg-background"> <Toaster position="top-right" reverseOrder={false} />
+return ( <div className="min-h-screen p-4 sm:p-6 bg-background">
 
 
   <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2 mb-6">

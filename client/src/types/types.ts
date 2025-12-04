@@ -1,7 +1,7 @@
   import type { LucideIcon } from "lucide-react";
 
   /* USER & AUTH */
-  export type Role = "product_manager" | "operator";
+  export type Role = "product_manager" | "operator" | undefined;
 
   export interface User {
     _id?: string;
@@ -41,7 +41,6 @@ export interface Operator {
     subItems?: SubMenuItem[];
   }
 
-<<<<<<< HEAD
 export interface OperatorStats {
   stepsCompleted: number;
   totalSteps: number;
@@ -61,7 +60,6 @@ export interface UseFetchReturn<T> {
     error: string | null;
     refetch: () => Promise<void>;
 }
-=======
   export interface MenuGroup {
     label: string;
     items: MenuItem[];
@@ -179,4 +177,3 @@ updatedAt: string;
 //   value: number | string;
 //   color?: string; // optional for custom card color
 // }
->>>>>>> cf6c6ca96781f09cf40d2c768a6c8b7eb0338688

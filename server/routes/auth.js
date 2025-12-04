@@ -47,7 +47,7 @@ router.get("/me", authenticateToken, authController.getMe);
 
 // fetch operators
 
-router.get("/users", authController.getOperators);
+router.get("/operators", authController.getOperators);
 
 router.post("/logout", authController.logout);
 

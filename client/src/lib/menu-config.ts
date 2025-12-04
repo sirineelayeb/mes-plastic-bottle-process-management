@@ -18,7 +18,11 @@ import {
   BarChart3,
   Activity,
   Bell,
+  BotIcon,
+  ActivityIcon,
 } from "lucide-react";
+
+
 
 export const menuConfig: MenuConfig = {
 product_manager: [
@@ -27,6 +31,7 @@ product_manager: [
     label: "Administration",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: Home },
+      { title: "Process", url: "/process", icon: ActivityIcon },
 
       {
         title: "Operator Management",
@@ -47,10 +52,9 @@ product_manager: [
       {
         title: "Tasks",
         url: "/tasks",
-        icon: Package, // keeps "Package" for tasks
+        icon: Package, 
         subItems: [
           { title: "Add Task", url: "/tasks/add", icon: PlusCircle }, // more action-oriented
-          { title: "Manage Tasks", url: "/tasks/manage", icon: Settings }, // management icon
         ],
       },
       {
@@ -68,8 +72,9 @@ product_manager: [
         icon: Activity, // better matches Machines/production flow
         subItems: [
           { title: "All Machines", url: "/machines/all", icon: ClipboardList },
-          { title: "Add Machine", url: "/machines/add", icon: PlusCircle },
-          { title: "In Service", url: "/machines/in-service", icon: Activity },
+          { title: "Preform Maker", url: "/machines/molder", icon: BotIcon },
+          { title: "Blow Molder", url: "/machines/molder", icon: BotIcon },
+          { title: "Filler Capper", url: "/machines/molder", icon: BotIcon },
           { title: "Maintenance", url: "/machines/in-maintenance", icon: Wrench },
         ],
       },

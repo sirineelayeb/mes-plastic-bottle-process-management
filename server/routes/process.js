@@ -10,6 +10,7 @@ router.post("/", processController.createProcess);
 
 // Get all processes
 router.get("/", processController.getProcesses);
+router.get("/current", processController.getCurrentProcess);
 
 // Get a single process by ID
 router.get("/:id", processController.getProcessById);

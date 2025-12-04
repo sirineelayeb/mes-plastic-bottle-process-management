@@ -309,15 +309,8 @@ const addSkillsToOperator = async (req, res) => {
 // GET OPERATORS (optionally filtered by skills)
 const getOperators = async (req, res) => {
   try {
-    const skillIds = req.query.skillIds;
-    const filter = { role: ALLOWED_ROLES.OPERATOR };
 
-    if (skillIds) {
-      const skillsArray = skillIds.split(",");
-      filter.skills = { $all: skillsArray };
-    }
-
-    const operators = await User.find(filter).select("_id name email skills");
+    const operators = await User.find({role: "operator"}).select("_id name email skills");
 
     res.status(200).json({ success: true, count: operators.length, operators });
   } catch (error) {

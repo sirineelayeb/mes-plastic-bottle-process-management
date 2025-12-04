@@ -5,9 +5,8 @@ const Machine = require("../models/machine");
 // Create Task
 module.exports.createTask = async (req, res) => {
   try {
-    const { taskName, skills, machine, dateStart, dateEnd, operators } = req.body;
+    const { taskName, skills, machine,taskDescription, duration } = req.body;
 
-    // Validate skills array
     if (!Array.isArray(skills) || skills.length === 0) {
       return res.status(400).json({
         success: false,
@@ -15,7 +14,6 @@ module.exports.createTask = async (req, res) => {
       });
     }
 
-    // Validate machine existence
     const machineExists = await Machine.findById(machine);
     if (!machineExists) {
       return res.status(404).json({
@@ -24,7 +22,6 @@ module.exports.createTask = async (req, res) => {
       });
     }
 
-    // Validate each skill ID
     const skillsExist = await Skill.find({ _id: { $in: skills } });
 
     if (skillsExist.length !== skills.length) {
@@ -34,13 +31,14 @@ module.exports.createTask = async (req, res) => {
       });
     }
 
-    // Remove duplicates (safety)
     const uniqueSkills = [...new Set(skills)];
 
     const task = await Task.create({
       taskName,
+      taskDescription,
       skills: uniqueSkills,
-      machine,dateStart ,dateEnd ,operators
+      machine,
+      duration
     });
 
     res.status(201).json({
@@ -59,7 +57,6 @@ module.exports.getTasks = async (req, res) => {
     const tasks = await Task.find()
       .populate("skills", "name description")
       .populate("machine", "idMachine name status")
-        .populate("operators", "name") 
       .sort({ createdAt: -1 });
 
     res.status(200).json({

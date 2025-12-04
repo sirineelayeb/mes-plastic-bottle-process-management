@@ -8,6 +8,8 @@ const processTaskSchema = new mongoose.Schema({
     enum: ["pending", "in_progress", "done"],
     default: "pending",
   },
+  startTime: { type: Date },
+  endTime: { type: Date },
 }, { _id: false });
 
 const processSchema = new mongoose.Schema({

@@ -7,6 +7,10 @@ const taskSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    taskDescription: {
+      type: String,
+      trim: true,
+    },
     skills: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -20,20 +24,9 @@ const taskSchema = new mongoose.Schema(
       ref: "Machine",
       required: true,
     },
-     operators: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "User" } 
-    ],
-    dateStart: {
-      type: Date,
-    },
-    dateEnd: {
-      type: Date,
-    },
-     status: {
-      type: String,
-      enum: ["Pending", "In Progress", "Completed"],
-      default: "Pending",
-    },
+    duration: {
+      type: Number,
+    }
   },
   {
     timestamps: true,

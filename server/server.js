@@ -12,7 +12,7 @@ const machineRouter = require("./routes/machine");
 const taskRouter = require("./routes/task");
 const processRouter = require("./routes/process");
 const logger = require("./utils/logger");
-const initMQTT = require("./mqtt/mqttClient"); // 🔥 Import MQTT
+const initMQTT = require("./mqtt/mqttClient"); 
 
 const app = express();
 const server = http.createServer(app);
@@ -50,8 +50,8 @@ app.get("/health", (req, res) => {
 app.use("/auth", authRouter);
 app.use("/skills", skillRouter);
 app.use("/machines", machineRouter);
-app.use("/tasks", taskRouter);
 app.use("/process", processRouter);
+app.use("/tasks", taskRouter);
 
 app.use((req, res) => {
   res.status(404).json({

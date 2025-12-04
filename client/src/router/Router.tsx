@@ -1,48 +1,220 @@
-// src/router/Router.tsx
 import React from "react";
-import { useRoutes, Navigate } from "react-router-dom";
+import { useRoutes } from "react-router-dom";
 import RequireAuth from "@/components/base/RequireAuth";
 import { useAuthContext } from "@/hooks/useAuthContext";
 import type { Role } from "@/types/types";
 
-// Lazy loaded common pages
+// Lazy loaded pages
 const MainLayout = React.lazy(() => import("@/layouts/MainLayout"));
 const Login = React.lazy(() => import("@/pages/Login"));
+const Signup = React.lazy(() => import("@/pages/SignUp"));
 const AuthCallback = React.lazy(() => import("@/pages/AuthCallback"));
 
+// Product Manager pages
+const ProductManagerHome = React.lazy(() => import("@/pages/ProductManager/ProductManagerHome"));
+const OperatorManagement = React.lazy(() => import("@/pages/ProductManager/operator-management/OperatorManagement"));
+const AddOperator = React.lazy(() => import("@/pages/ProductManager/operator-management/AddOperator"));
+const SkillsList = React.lazy(() => import("@/pages/ProductManager/skills-management/AllSkills"));
+const ManageSkills = React.lazy(() => import("@/pages/ProductManager/skills-management/ManageSkills"));
+const AllMachines = React.lazy(() => import("@/pages/ProductManager/machines/AllMachines"));
+const AddMachine = React.lazy(() => import("@/pages/ProductManager/machines/AddMachine"));
+const InServiceMachines = React.lazy(() => import("@/pages/ProductManager/machines/InServiceMachines"));
+const InMaintenanceMachines = React.lazy(() => import("@/pages/ProductManager/machines/InMaintenanceMachines"));
+const AlertsPage = React.lazy(() => import("@/pages/Alerts"));
+const LiveMonitoringPage = React.lazy(() => import("@/pages/ProductManager/Monitoring"));
+const AllTasks = React.lazy(() => import("@/pages/ProductManager/tasks-management/AllTasks"));
+const AddTask = React.lazy(() => import("@/pages/ProductManager/tasks-management/AddTask"));
+const Process = React.lazy(() => import("@/pages/ProductManager/Process.tsx"));
 
-// Supervisor pages
-import OperatorManagement from "@/pages/ProductManager/operator-management/OperatorManagement";
-import AddOperator from "@/pages/ProductManager/operator-management/AddOperator";
+// Operator pages
+const OperatorHome = React.lazy(() => import("@/pages/operator/OperatorHome"));
+const MyTasks = React.lazy(() => import("@/pages/operator/MyTasks"));
+const Alertop = React.lazy(() => import("@/pages/operator/Alertop"));
+const ReportIssue = React.lazy(() => import("@/pages/operator/ReportIssue"));
 
-// Operator page
-
-import SkillsList from "@/pages/ProductManager/skills-management/AllSkills";
-import ManageSkills from "@/pages/ProductManager/skills-management/ManageSkills";
-import ProductManagerHome from "@/pages/ProductManager/ProductManagerHome";
-import AllMachines from "@/pages/ProductManager/machines/AllMachines";
-import AddMachine from "@/pages/ProductManager/machines/AddMachine";
-import InServiceMachines from "@/pages/ProductManager/machines/InServiceMachines";
-import InMaintenanceMachines from "@/pages/ProductManager/machines/InMaintenanceMachines";
-import AlertsPage from "@/pages/Alerts";
-import LiveMonitoringPage from "@/pages/ProductManager/Monitoring";
-import Signup from "@/pages/SignUp";
-import ManageTasks from "@/pages/ProductManager/tasks-management/ManageTasks";
-import AddTask from "@/pages/ProductManager/tasks-management/AddTask";
-
-
-
-
-const OperatorHome = React.lazy(() => import("../pages/operator/OperatorHome"));
-const MyTasks = React.lazy(() => import("../pages/operator/MyTasks"));
-const Alertop = React.lazy(() => import("../pages/operator/Alertop"));
-const ReportIssue = React.lazy(() => import("../pages/operator/ReportIssue"));
 const Router = () => {
   const { user } = useAuthContext();
-  const role = user?.role as Role; 
+  const role: Role = user?.role;
 
   const routes = [
-    /* ====================== PUBLIC ====================== */
+    {
+      element: <RequireAuth />,
+      children: [
+        {
+          path: "/",
+          element: <MainLayout />,
+          children: [
+            ...(role === "product_manager"
+              ? [
+                  {
+                    path: "/",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <ProductManagerHome />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "/process",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <Process />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "dashboard",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <ProductManagerHome />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "operators/manage",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <OperatorManagement />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "operators/add",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <AddOperator />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "tasks/all",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <AllTasks />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "tasks/add",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <AddTask />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "skills/all",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <SkillsList />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "skills/manage",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <ManageSkills />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "machines/all",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <AllMachines />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "machines/add",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <AddMachine />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "machines/in-service",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <InServiceMachines />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "machines/in-maintenance",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <InMaintenanceMachines />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "monitoring",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <LiveMonitoringPage />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "alerts",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <AlertsPage />
+                      </React.Suspense>
+                    ),
+                  },
+                ]
+              : role === "operator"
+              ? [
+                  {
+                    path: "/",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <OperatorHome />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "operator/dashboard",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <OperatorHome />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "operator/tasks",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <MyTasks />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "operator/report",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <ReportIssue />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "operator/my-alerts",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <Alertop />
+                      </React.Suspense>
+                    ),
+                  },
+                ]
+              : []),
+          ],
+        },
+      ],
+    },
     {
       path: "/login",
       element: (
@@ -52,13 +224,13 @@ const Router = () => {
       ),
     },
     {
-  path: "/signup", 
-  element: (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <Signup />
-    </React.Suspense>
-  ),
-},
+      path: "/signup",
+      element: (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <Signup />
+        </React.Suspense>
+      ),
+    },
     {
       path: "/auth/callback",
       element: (
@@ -66,202 +238,6 @@ const Router = () => {
           <AuthCallback />
         </React.Suspense>
       ),
-    },
-
-    /* ====================== PROTECTED ====================== */
-    {
-      element: <RequireAuth />,
-      children: [
-        {
-          element: <MainLayout />,
-          children: [
-            /* Root – redirect or show role-specific home */
-            {
-              path: "/",
-              element: (
-                <React.Suspense fallback={<div>Loading...</div>}>
-                  {!user ? (
-                    <div>Loading user...</div>
-                  ) : role === "product_manager" ? (
-                    <Navigate to="/dashboard" replace />
-                  ) : role === "operator" ? (
-                    <Navigate to="/operator/dashboard" replace />
-                  ) : (
-                    <Navigate to="/login" replace />
-                  )}
-                </React.Suspense>
-              ),
-            },
-
-            /* ------------------- SUPERVISOR ROUTES ------------------- */
-            ...(role === "product_manager"
-              ? [
-                 
-                  {
-                    path: "/dashboard",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <ProductManagerHome />
-                      </React.Suspense>
-                    ),
-                  },
-                   {
-                    path: "/",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <ProductManagerHome />
-                      </React.Suspense>
-                    ),
-                  },
-                  {
-                    path: "/operators/manage",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <OperatorManagement />
-                      </React.Suspense>
-                    ),
-                  },
-                  {
-                    path: "/operators/add",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <AddOperator />
-                      </React.Suspense>
-                    ),
-                  },
-                  {
-                    path: "/tasks/manage",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <ManageTasks />
-                      </React.Suspense>
-                    ),
-                  },
-                   {
-                    path: "/tasks/add",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <AddTask />
-                      </React.Suspense>
-                    ),
-                  },
-                     {
-                    path: "/skills/all",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <SkillsList />
-                      </React.Suspense>
-                    ),
-                  },
-                   {
-                    path: "/skills/manage",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <ManageSkills />
-                      </React.Suspense>
-                    ),
-                  },
-                   {
-                    path: "/machines/all",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <AllMachines  />
-                      </React.Suspense>
-                    ),
-                  },
-                  {
-                    path: "/machines/add",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <AddMachine  />
-                      </React.Suspense>
-                    ),
-                  },
-                  {
-                    path: "/machines/in-service",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <InServiceMachines  />
-                      </React.Suspense>
-                    ),
-                  },
-                  {
-                    path: "/machines/in-maintenance",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <InMaintenanceMachines  />
-                      </React.Suspense>
-                    ),
-                  },
-                   {
-                    path: "/monitoring",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <LiveMonitoringPage  />
-                      </React.Suspense>
-                    ),
-                  },
-                   {
-                    path: "/alerts",
-                    element: (
-                      <React.Suspense fallback={<div>Loading...</div>}>
-                        <AlertsPage  />
-                      </React.Suspense>
-                    ),
-                  },
-                ]
-              : []),
-
-            /* ------------------- OPERATOR ROUTES ------------------- */
-           ...(role === "operator"
-  ? [
-      {
-        path: "/operator/dashboard",
-        element: (
-          <React.Suspense fallback={<div>Loading...</div>}>
-            <OperatorHome />
-          </React.Suspense>
-        ),
-      },
-     {
-        path: "/operator/tasks",
-        element: (
-          <React.Suspense fallback={<div>Loading...</div>}>
-            <MyTasks />
-          </React.Suspense>
-        ),
-      },
-       {
-        path: "/operator/report",
-        element: (
-          <React.Suspense fallback={<div>Loading...</div>}>
-            <ReportIssue isOpen={false} onClose={function (): void {
-              throw new Error("Function not implemented.");
-            } } onSubmit={function (data: { title: string; description: string; reporter: string; date: string; }): void {
-              throw new Error("Function not implemented.");
-            } } reporterName={""}/>
-          </React.Suspense>
-        ),
-      },
-       {
-        path: "/operator/my-alerts",
-        element: (
-          <React.Suspense fallback={<div>Loading...</div>}>
-            <Alertop />
-          </React.Suspense>
-        ),
-      },
-    ]
-  : []),
-
-            /* Catch-all */
-            {
-              path: "*",
-              element: <Navigate to="/" replace />,
-            },
-          ],
-        },
-      ],
     },
   ];
 

@@ -60,6 +60,36 @@ module.exports.getProcesses = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+module.exports.getCurrentProcess = async (req, res) => {
+  try {
+    const process = await Process.findOne({ status: "in_progress" })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "tasks.task",
+        select: "taskName machine skills",
+        populate: {
+          path: "skills", // populate the skills of the task
+          select: "name", // adjust fields you want from Skill
+        },
+      })
+      .populate({
+        path: "tasks.operator",
+        select: "name email role skills",
+        populate: {
+          path: "skills", // populate the skills of the operator
+          select: "name", // adjust fields you want from Skill
+        },
+      });
+
+    res.status(200).json({
+      success: true,
+      process,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 // Get a single process by ID
 module.exports.getProcessById = async (req, res) => {

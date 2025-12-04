@@ -19,14 +19,14 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { axiosPublic } from "@/api/axios";
-import { toast, Toaster } from "react-hot-toast";
-import { Edit2, Trash2 } from "lucide-react";
+import { BotIcon, Edit2, Trash2 } from "lucide-react";
 import type { Machine } from "@/types/types";
+import { toast } from "sonner";
 
 const statusStyles: Record<Machine["status"], string> = {
-en_service: "bg-green-100 text-green-700 border-green-300",
-en_arret: "bg-red-100 text-red-700 border-red-300",
-en_maintenance: "bg-yellow-100 text-yellow-700 border-yellow-300",
+en_service: "bg-green-100 text-green-700 border-green-300 rounded-[10px]",
+en_arret: "bg-red-700/20 font-bold text-red-700 rounded-[10px]",
+en_maintenance: "bg-primary/20 text-primary font-bold rounded-[10px]",
 };
 
 export default function AllMachines() {
@@ -130,7 +130,7 @@ try {
 if (loading) return <p>Loading machines...</p>;
 if (error) return <p className="text-red-500">{error}</p>;
 
-return ( <div className="p-6 space-y-6 max-w-5xl mx-auto"> <Toaster position="top-right" reverseOrder={false} /> <h1 className="text-2xl font-bold mb-4">All Machines</h1>
+return ( <div className="p-6 space-y-6 max-w-5xl mx-auto"> <h1 className="text-2xl font-bold mb-4">All Machines</h1>
 
 
   {/* Filters */}
@@ -164,11 +164,13 @@ return ( <div className="p-6 space-y-6 max-w-5xl mx-auto"> <Toaster position="to
         <Card key={machine._id} className="p-4 border rounded-lg space-y-2 relative">
           <div className="flex justify-between items-start">
             <div>
+              <div className="flex gap-4 items-start">
+                <BotIcon />
+
               <h2 className="text-lg font-semibold">{machine.name}</h2>
-              <p className="text-sm text-gray-600">{machine.description || "-"}</p>
-              <Badge className={`text-xs px-2 py-1 rounded-md border ${statusStyles[machine.status]}`}>
-                {machine.status.replace("_", " ").toUpperCase()}
-              </Badge>
+              </div>
+              <p className="text-sm mt-3">{machine.description || "-"}</p>
+              
             </div>
             <div className="flex space-x-2">
               <button onClick={() => handleEdit(machine)} className="p-1 hover:bg-gray-200 rounded">
@@ -179,6 +181,9 @@ return ( <div className="p-6 space-y-6 max-w-5xl mx-auto"> <Toaster position="to
               </button>
             </div>
           </div>
+          <Badge className={`text-xs px-2 py-1 rounded-md ml-auto border ${statusStyles[machine.status]}`}>
+                {machine.status.replace("_", " ").toUpperCase()}
+              </Badge>
         </Card>
       ))
     ) : (
