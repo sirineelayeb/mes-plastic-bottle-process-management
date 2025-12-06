@@ -3,7 +3,7 @@ import Calendar from "@/components/base/Calendar";
 import { SectionCards } from "@/components/base/DahsboardElements";
 import ProcessTimeline from "@/components/base/ProcessTimeline";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,10 +24,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, ListChecks, Users, TrendingUp, Calendar1 } from "lucide-react";
 import useFetch from "@/hooks/useFetchData";
 import { axiosPublic } from "@/api/axios";
 import { toast } from "sonner";
+import ProcessList from "@/components/base/ProcessList";
 
 // Types
 interface Task {
@@ -53,6 +54,8 @@ interface ProcessTask {
   task: string;
   operator: string;
   status: "pending" | "in_progress" | "done";
+  startTime?: string;
+  endTime?: string;
 }
 
 interface FormData {
@@ -62,8 +65,9 @@ interface FormData {
 }
 
 function Process() {
-  const { data: operatorsData } = useFetch<{ operators: Operator[] }>("/auth/operators");
-  const { data: tasksData } = useFetch<{ tasks: Task[] }>("/tasks");
+  const { data: operatorsData, refetch: refetch3 } = useFetch<{ operators: Operator[] }>("/auth/operators");
+  const { data: tasksData, refetch } = useFetch<{ tasks: Task[] }>("/tasks");
+  const { data: totalProcesses,refetch: refetch2 } = useFetch("/process");
   
   const operators = operatorsData?.operators || [];
   const tasks = tasksData?.tasks || [];
@@ -85,7 +89,9 @@ function Process() {
         {
           task: "",
           operator: "",
-          status: "pending"
+          status: "pending",
+          startTime: "",
+          endTime: ""
         }
       ]
     });
@@ -119,6 +125,9 @@ function Process() {
         status: "planned",
         tasks: []
       });
+      refetch()
+      refetch2()
+      refetch3()
       toast.success("Process created successfully!");
     } catch (error) {
       console.error("Error creating process:", error);
@@ -127,6 +136,21 @@ function Process() {
     
     setOpen(false);
   };
+  const getProcessStats = () => {
+    if (!totalProcesses?.processes) return { planned: 0, inProgress: 0, completed: 0 };
+    
+    const stats = totalProcesses.processes.reduce((acc, process) => {
+      if (process.status === 'planned') acc.planned++;
+      if (process.status === 'in_progress') acc.inProgress++;
+      if (process.status === 'completed') acc.completed++;
+      return acc;
+    }, { planned: 0, inProgress: 0, completed: 0 });
+    
+    return stats;
+  };
+  const stats = getProcessStats();
+
+  console.log("data", totalProcesses)
 
   return (
     <div>
@@ -274,6 +298,32 @@ function Process() {
                                 </SelectContent>
                               </Select>
                             </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-2">
+                                <Label htmlFor={`startTime-${index}`}>Start Time</Label>
+                                <Input
+                                  id={`startTime-${index}`}
+                                  type="datetime-local"
+                                  value={task.startTime || ""}
+                                  onChange={(e) =>
+                                    updateTask(index, "startTime", e.target.value)
+                                  }
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor={`endTime-${index}`}>End Time</Label>
+                                <Input
+                                  id={`endTime-${index}`}
+                                  type="datetime-local"
+                                  value={task.endTime || ""}
+                                  onChange={(e) =>
+                                    updateTask(index, "endTime", e.target.value)
+                                  }
+                                />
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -295,11 +345,64 @@ function Process() {
       
       <div className="flex justify-between mt-6 gap-6">
         <div className="flex-1">
-          <SectionCards />
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Processes</CardTitle>
+              <ListChecks className="h-4 w-4 opacity-70" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{totalProcesses?.count || 0}</div>
+              <p className="text-xs opacity-70 mt-1">
+                {stats.inProgress} in progress
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Operators</CardTitle>
+              <Users className="h-4 w-4 opacity-70" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{operators?.count || 0}</div>
+              <p className="text-xs opacity-70 mt-1">
+                Available for tasks
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Planned</CardTitle>
+              <Calendar1 className="h-4 w-4 opacity-70" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.planned}</div>
+              <p className="text-xs opacity-70 mt-1">
+                Upcoming processes
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Completed</CardTitle>
+              <TrendingUp className="h-4 w-4 opacity-70" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.completed}</div>
+              <p className="text-xs opacity-70 mt-1">
+                Finished successfully
+              </p>
+            </CardContent>
+          </Card>
+        </div>
           <ProcessTimeline />
         </div>
-        <div className="pr-5">
-          <Calendar />
+        <div className="pr-5 h-screen overflow-x-scroll">
+          <Calendar data={totalProcesses} />
+          <ProcessList />
         </div>
       </div>
     </div>

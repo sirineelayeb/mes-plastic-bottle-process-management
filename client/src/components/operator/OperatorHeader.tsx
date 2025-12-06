@@ -14,7 +14,6 @@ function OperatorHeader({ operator }: OperatorHeaderProps) {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">{operator.name}</h1>
-            <p className="text-sm text-white">Employee ID: {operator.employeeId}</p>
           </div>
         </div>
         

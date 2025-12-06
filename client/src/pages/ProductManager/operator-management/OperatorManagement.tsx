@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { toast, Toaster } from "react-hot-toast";
 import { axiosPublic } from "@/api/axios";
 import type { Operator, Skill } from "@/types/types";
 import { Trash2, Edit2, UserPlus } from "lucide-react";
@@ -11,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Pagination, PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { toast } from "sonner";
 
 export default function OperatorsManagement() {
 const [operators, setOperators] = useState<Operator[]>([]);
@@ -28,7 +28,7 @@ const itemsPerPage = 6;
 // Fetch operators and skills
 const loadData = async () => {
 try {
-const opRes = await axiosPublic.get("/auth/users");
+const opRes = await axiosPublic.get("/auth/operators");
 const skRes = await axiosPublic.get("/skills");
 setOperators(opRes.data.operators || []);
 setSkills(skRes.data.skills || []);
@@ -70,7 +70,7 @@ toast.error("Failed to update operator");
 const handleDelete = async (operatorId: string) => {
 if (!window.confirm("Are you sure you want to delete this operator?")) return;
 try {
-await axiosPublic.delete(`/operators/${operatorId}`);
+await axiosPublic.delete(`/auth/operators/${operatorId}`);
 toast.success("Operator deleted successfully");
 setOperators((prev) => prev.filter((op) => op._id !== operatorId));
 } catch {
@@ -90,7 +90,7 @@ const paginatedOperators = operators.slice(
 currentPage * itemsPerPage
 );
 
-return ( <div className="p-6 space-y-6"> <Toaster position="top-right" />
+return ( <div className="p-6 space-y-6">
 
 
   {/* Header */}

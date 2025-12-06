@@ -25,7 +25,10 @@ const LiveMonitoringPage = React.lazy(() => import("@/pages/ProductManager/Monit
 const AllTasks = React.lazy(() => import("@/pages/ProductManager/tasks-management/AllTasks"));
 const AddTask = React.lazy(() => import("@/pages/ProductManager/tasks-management/AddTask"));
 const Process = React.lazy(() => import("@/pages/ProductManager/Process.tsx"));
+const Preform = React.lazy(() => import("@/pages/ProductManager/machines/PreformMaker"));
 
+const Filler = React.lazy(() => import("@/pages/ProductManager/machines/FillerClapper"));
+const Blow = React.lazy(() => import("@/pages/ProductManager/machines/BlowMolder"));
 // Operator pages
 const OperatorHome = React.lazy(() => import("@/pages/operator/OperatorHome"));
 const MyTasks = React.lazy(() => import("@/pages/operator/MyTasks"));
@@ -143,6 +146,30 @@ const Router = () => {
                     ),
                   },
                   {
+                    path: "machines/preform",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <Preform />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "machines/blow",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <Blow />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "machines/filler",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <Filler />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
                     path: "machines/in-maintenance",
                     element: (
                       <React.Suspense fallback={<div>Loading...</div>}>
@@ -174,6 +201,14 @@ const Router = () => {
                     element: (
                       <React.Suspense fallback={<div>Loading...</div>}>
                         <OperatorHome />
+                      </React.Suspense>
+                    ),
+                  },
+                  {
+                    path: "machines/all",
+                    element: (
+                      <React.Suspense fallback={<div>Loading...</div>}>
+                        <AllMachines />
                       </React.Suspense>
                     ),
                   },

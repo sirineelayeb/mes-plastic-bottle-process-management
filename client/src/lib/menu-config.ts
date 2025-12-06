@@ -39,7 +39,7 @@ product_manager: [
         icon: Users,
         subItems: [
           { title: "Add Operator", url: "/operators/add", icon: UserPlus },
-          { title: "Manage Operators", url: "/operators/manage", icon: UserCog },
+          { title: "Manage operators", url: "/operators/manage", icon: UserPlus },
         ],
       },
     ],
@@ -72,30 +72,41 @@ product_manager: [
         icon: Activity, // better matches Machines/production flow
         subItems: [
           { title: "All Machines", url: "/machines/all", icon: ClipboardList },
-          { title: "Preform Maker", url: "/machines/molder", icon: BotIcon },
-          { title: "Blow Molder", url: "/machines/molder", icon: BotIcon },
-          { title: "Filler Capper", url: "/machines/molder", icon: BotIcon },
+          { title: "Preform Maker", url: "/machines/preform", icon: BotIcon },
+          { title: "Blow Molder", url: "/machines/blow", icon: BotIcon },
+          { title: "Filler Capper", url: "/machines/filler", icon: BotIcon },
           { title: "Maintenance", url: "/machines/in-maintenance", icon: Wrench },
         ],
-      },
-      {
-        title: "Live Monitoring",
-        url: "/monitoring",
-        icon: BarChart3, // monitoring/charting is appropriate
       },
     ],
   },
 ],
 
   operator: [
+
     {
       label: "My Workspace",
       items: [
         { title: "Dashboard", url: "/operator/dashboard", icon: Home },
-        { title: "My Tasks", url: "/operator/tasks", icon: Package },
-        { title: "Report Issue", url: "/operator/report", icon: AlertTriangle },
-        { title: "My Alerts", url: "/operator/my-alerts", icon: Bell },
       ],
+      
     },
+     {
+    label: "Production",
+    items: [
+     
+      {
+        title: "Machines",
+        url: "/machines",
+        icon: Activity,
+        subItems: [
+          { title: "All Machines", url: "/machines/all", icon: ClipboardList },
+        ],
+      },
+
+    ],
+  },
+    
+    
   ],
 };

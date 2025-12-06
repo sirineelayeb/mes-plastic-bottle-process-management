@@ -5,7 +5,6 @@ import useFetch from '@/hooks/useFetchData';
 export default function ProcessTimeline() {
     const {data: currentProcess} = useFetch("/process/current");
 
-    console.log("Current Process:", currentProcess);
 
 
 
@@ -22,6 +21,7 @@ export default function ProcessTimeline() {
         return <Clock  size={15} />;
     }
   };
+  
 
 
   return (
@@ -51,7 +51,7 @@ export default function ProcessTimeline() {
 
           {/* Task columns */}
           <div className="space-y-6">
-            {currentProcess.process.tasks.map((processTask, index) => (
+            {currentProcess.process && currentProcess.process.tasks && currentProcess.process.tasks.map((processTask, index) => (
               <div key={index} className="relative flex items-start gap-6">
                 {/* Timeline dot */}
                 <div className="relative bg-green-600 p-3 rounded-[50%] z-10 flex-shrink-0 translate-x-2.5">
@@ -67,10 +67,10 @@ export default function ProcessTimeline() {
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <h3 className="text-lg font-semibold ">
-                        {processTask.task.name}
+                        {processTask?.task?.name}
                       </h3>
                       <p className="text-sm  mt-1">
-                        {processTask.task.description}
+                        {processTask?.task?.description}
                       </p>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs ${
@@ -78,25 +78,25 @@ export default function ProcessTimeline() {
                       processTask.status === 'in_progress' ? ' text-blue-700' :
                       'bg-orange-500/20 text-orange-500 font-bold'
                     }`}>
-                      {processTask.status.replace('_', ' ').toUpperCase()}
+                      {processTask?.status.replace('_', ' ').toUpperCase()}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-6 text-sm">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-gradient-to-br bg-primary rounded-full flex items-center justify-center  font-medium">
-                        {processTask.operator.name.split(' ').map(n => n[0]).join('')}
+                        {processTask?.operator?.name.split(' ').map(n => n[0]).join('')}
                       </div>
                       <div>
-                        <p className="font-medium ">{processTask.operator.name}</p>
-                        <p className="text-xs ">{processTask.operator.email}</p>
+                        <p className="font-medium ">{processTask?.operator?.name}</p>
+                        <p className="text-xs ">{processTask?.operator?.email}</p>
                       </div>
                     </div>
 
                     <div className="flex gap-2 flex-wrap">
-                      {processTask.operator.skills.map((skill) => (
-                        <span key={skill._id} className="px-2 py-1 bg-blue-500/20 text-blue-600 font-bold rounded text-xs">
-                          {skill.name}
+                      {processTask?.operator?.skills.map((skill) => (
+                        <span key={skill?._id} className="px-2 py-1 bg-blue-500/20 text-blue-600 font-bold rounded text-xs">
+                          {skill?.name}
                         </span>
                       ))}
                     </div>
